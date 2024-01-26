@@ -1,0 +1,92 @@
+.data
+buffer: .space 31  # Allocate 31 bytes (30 for input + 1 for null-terminator)
+buffer2: .space 31 # Allocate 31 bytes for the shifted string
+promptString: .asciiz "Input a string 30 characters or less: "
+promptNumber: .asciiz "\nInput an integer greater than 0: "
+errorMsg1: .asciiz "\nNo input. Run again."
+errorMsg2: .asciiz "\nWrong input. Run again."
+outputMsg: .asciiz "\nShifted string = ["
+closeBracket: .asciiz "]"
+
+.text
+.globl main
+main:
+    # Prompt for string input
+    li $v0, 4
+    la $a0, promptString
+    syscall
+
+    # Read the string
+    li $v0, 8
+    la $a0, buffer
+    li $a1, 31
+    syscall
+
+    # Check if input length is 0 (just ENTER pressed)
+    lb $t0, buffer # Load the first byte of buffer
+    beqz $t0, errorNoInput # If it is zero, no input was given
+
+    # Prompt for number input
+    li $v0, 4
+    la $a0, promptNumber
+    syscall
+
+    # Read the number
+    li $v0, 5
+    syscall
+
+    # Check if number is less than or equal to 0
+    blez $v0, errorWrongInput
+
+    # Store number in $t1
+    move $t1, $v0
+
+    # Shift characters in buffer and store in buffer2
+    la $a0, buffer    # Load address of buffer
+    la $a1, buffer2   # Load address of buffer2
+    li $t2, 0         # Index for buffer2
+
+shift_loop:
+    lb $t3, 0($a0)    # Load a byte from buffer
+    beqz $t3, display # If null-terminator encountered, end loop
+    addu $t4, $t3, $t1 # Add the shift amount
+    sb $t4, 0($a1)    # Store the shifted byte into buffer2
+    addiu $a0, $a0, 1 # Move to the next byte of buffer
+    addiu $a1, $a1, 1 # Move to the next byte of buffer2
+    j shift_loop
+
+display:
+    # Display shifted string message
+    li $v0, 4
+    la $a0, outputMsg
+    syscall
+
+    # Display shifted string
+    la $a0, buffer2   # Load address of buffer2
+    li $v0, 4
+    syscall
+
+    # Display closing bracket
+    li $v0, 4
+    la $a0, closeBracket
+    syscall
+
+    j exit
+
+errorNoInput:
+    # Display error message for no input
+    li $v0, 4
+    la $a0, errorMsg1
+    syscall
+    j exit
+
+errorWrongInput:
+    # Display error message for wrong number input
+    li $v0, 4
+    la $a0, errorMsg2
+    syscall
+    j exit
+
+exit:
+    li $v0, 10 # Exit system call
+    syscall
