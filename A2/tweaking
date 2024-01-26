@@ -1,0 +1,37 @@
+    # Calculate string length
+    la $t3, buffer
+    li $t6, 0
+    calc_length:
+        lb $t5, 0($t3)
+        beqz $t5, end_calc_length
+        addiu $t3, $t3, 1
+        addiu $t6, $t6, 1
+        j calc_length
+    end_calc_length:
+
+    # Adjust shift amount
+    subu $t1, $t1, $t6
+    bgez $t1, end_adjust
+    add $t1, $t1, $t6
+    rem $t1, $t1, $t6
+    end_adjust:
+
+    # Shift characters in buffer and store in buffer2
+    la $a0, buffer
+    la $a1, buffer2
+    addu $a0, $a0, $t1
+    shift_loop:
+        lb $t3, 0($a0)
+        beqz $t3, end_shift_loop
+        sb $t3, 0($a1)
+        addiu $a0, $a0, 1
+        addiu $a1, $a1, 1
+        j shift_loop
+    end_shift_loop:
+        la $a0, buffer
+        lb $t3, 0($a0)
+        beqz $t3, display
+        sb $t3, 0($a1)
+        addiu $a0, $a0, 1
+        addiu $a1, $a1, 1
+        j end_shift_loop
