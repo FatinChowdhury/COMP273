@@ -5,7 +5,7 @@ msg1: .asciiz "Input a string 30 characters or less: "
 msg2: .asciiz "Input an integer greater than 0: "
 errorMsg1: .asciiz "No input. Run again."
 errorMsg2: .asciiz "Wrong input. Run again."
-msg3: .asciiz "Shifted string = ["
+shiftedMsg: .asciiz "Shifted string = ["
 closeBracket: .asciiz "]"
 
 .text
@@ -85,7 +85,7 @@ main:
 display:
     # Display shifted string message
     li $v0, 4
-    la $a0, msg3
+    la $a0, shiftedMsg
     syscall
 
     # Display shifted string
