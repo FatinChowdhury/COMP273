@@ -2,10 +2,10 @@
 buffer: .space 31  # Allocate 31 bytes (30 for input + 1 for null-terminator)
 buffer2: .space 31 # Allocate 31 bytes for the shifted string
 promptString: .asciiz "Input a string 30 characters or less: "
-promptNumber: .asciiz "\nInput an integer greater than 0: "
-errorMsg1: .asciiz "\nNo input. Run again."
-errorMsg2: .asciiz "\nWrong input. Run again."
-outputMsg: .asciiz "\nShifted string = ["
+promptNumber: .asciiz "Input an integer greater than 0: "
+errorMsg1: .asciiz "No input. Run again."
+errorMsg2: .asciiz "Wrong input. Run again."
+outputMsg: .asciiz "Shifted string = ["
 closeBracket: .asciiz "]"
 
 .text
