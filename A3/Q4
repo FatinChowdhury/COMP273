@@ -1,0 +1,19 @@
+    jal factorial        # jump & connect to the factorial function
+    
+    move $s0, $v0        # Move the result of the factorial calculation to $s0
+    
+    li $v0,   4            # print string
+    la $a0, inputMsg     # the inputMsg
+    syscall              # call function
+    
+    move $a0, $s0        # moving $s0 to $a0 to print the input
+    li $v0,   1            # prints the integer
+    syscall              # calling function
+       
+    li $v0,   4            # print the string
+    la $a0, factorialRes # specifically "The factorial is: " sentence    
+    syscall              # calling function
+    
+    move $a0, $s0        # moving $s0 to $a0 to print the factorial result
+    li $v0,   1            # print integer
+    syscall              # call function
