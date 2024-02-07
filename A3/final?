@@ -1,8 +1,9 @@
 .data
-msg1: .asciiz "Please input an integer value greater than or equal to  0: "
+msg1: .asciiz "\nPlease input an integer value greater than or equal to  0: "
 errorMsg: .asciiz "The value you entered is less than zero. This program only works with values greater than or equal to zero."
 inputMsg: .asciiz "Your input: "
 factorialRes: .asciiz "\nThe factorial is: "
+restartMsg: .asciiz "\n Would you like to do this again (Y/N): "
 
 .text
 main:
@@ -37,9 +38,18 @@ main:
     move $a0, $s0        # moving $v0 to $a0
     li $v0, 1            # print integer
     syscall              # call function
+
+
+    li $v0, 4		# asking for retry
+    la $a0, restartMsg	# print "Would you like to... "
+    syscall
     
-    li $v0, 10           # exiting program
-    syscall              # calling program
+    li $v0, 12		# read a single char
+    syscall
+    
+    li $t1, 'Y'
+    bne $v0, $t1, exit	# if not 'Y', exit
+    j main		# if 'Y' start over
 
 displayErrorMsg:   
     li $v0, 4            # print the string
@@ -48,13 +58,17 @@ displayErrorMsg:
     
     li $v0, 10           # exit code
     syscall              # call function
+
+exit: 
+    li $v0, 10		# exit program
+    syscall
    
 .text
 .globl factorial
 
 # int factorial(int n)
 # Argument: n is passed in $a0
-# Return value: result in $v0
+# Return value: result in $v1
 factorial:
     addi $sp, $sp, -8   # Allocate stack space for 2 items (return address and the argument)
     sw $ra, 4($sp)      # Save the return address on the stack
