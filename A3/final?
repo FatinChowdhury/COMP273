@@ -49,35 +49,30 @@ displayErrorMsg:
     li $v0, 10           # exit code
     syscall              # call function
    
+.text
+.globl factorial
+
+# int factorial(int n)
+# Argument: n is passed in $a0
+# Return value: result in $v0
 factorial:
-    # Allocate space on stack for local storage and to save $ra
-    addi $sp, $sp, -8
-    sw $ra,  4($sp)  # Save return address
-    
-    # Check if base case: n <=  0
-    blez $a0, baseCase  # if n <=  0, factorial is  1
-    
-    # Prepare for recursive call: factorial(n-1)
-    addi $a0, $a0, -1  # Decrement n
-    sw $a0,  0($sp)     # Store decremented n for recursive call
-    jal factorial      # Recursive call
-    
-    # After returning from recursive call, retrieve n and the result
-    lw $a0,  0($sp)     # Load n for multiplication
-    addi $a0, $a0,  1   # Correct the decrement to get original n
-    
-    # Multiply n * factorial(n-1)
-    # Note: $v0 already contains factorial(n-1) from the recursive call
-    mul $v0, $a0, $v0
-    
-    # Restore $ra and deallocate stack space
-    lw $ra,  4($sp)
-    addi $sp, $sp,  8
-    jr $ra              # Return to caller
-    
-baseCase:
-    li $v0,  1          # Set factorial(0) =  1
-    # Restore $ra and deallocate stack space for base case
-    lw $ra,  4($sp)
-    addi $sp, $sp,  8
+    addi $sp, $sp, -8   # Allocate stack space for 2 items (return address and the argument)
+    sw $ra, 4($sp)      # Save the return address on the stack
+    sw $a1, 0($sp)      # Save the current value of n on the stack
+
+    # Base case: if n <= 1, return 1
+    li $v0, 1           # Initialize return value to 1 (factorial(0) and factorial(1))
+    blez $a1, end_factorial # If n <= 0, skip the recursion and return 1 immediately
+
+    # Recursive case: factorial(n) = n * factorial(n-1)
+    addi $a1, $a1, -1   # Decrement n
+    jal factorial       # Recursive call factorial(n-1)
+
+    # After returning from the recursive call, multiply n by the result of factorial(n-1)
+    lw $a1, 0($sp)      # Restore the decremented n
+    mul $v1, $a1, $v1   # Multiply n (restored to original value) by factorial(n-1)
+
+end_factorial:
+    lw $ra, 4($sp)      # Restore the return address
+    addi $sp, $sp, 8    # Deallocate stack space
     jr $ra              # Return to caller
