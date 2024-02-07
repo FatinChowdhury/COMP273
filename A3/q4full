@@ -5,46 +5,48 @@ inputMsg: .asciiz "Your input: "
 factorialRes: .asciiz "\nThe factorial is: "
 
 .text
-.globl main
-
 main:
-    li $v0,  4            # print the string
+    li $v0, 4            # print the string
     la $a0, msg1         # from the address linked to msg1 (So print msg1)
     syscall              # call function
     
-    li $v0,  5            # read the integer
+    li $v0, 5            # read the integer
     syscall              # call function
     
     move $a0, $v0        # move the result in $v0 to $a0
     bltz $a0, displayErrorMsg # if $a0 is less than  0 then go to displayErrorMsg
     
     jal factorial        # jump & connect to the factorial function
-    
-    li $v0,  4            # print string
+
+
+    move $s0, $v0        # Move the result of the factorial calculation to $s0
+
+
+    li $v0, 4            # print string
     la $a0, inputMsg     # the inputMsg
     syscall              # call function
     
-    move $a0, $v0        # moving $v0 to $a0
-    li $v0,  1            # prints the integer
+    move $a0, $s0        # moving $v0 to $a0
+    li $v0, 1            # prints the integer
     syscall              # calling function
        
-    li $v0,  4            # print the string
+    li $v0, 4            # print the string
     la $a0, factorialRes # specifically "The factorial is: " sentence    
     syscall              # calling function
     
-    move $a0, $v0        # moving $v0 to $a0
-    li $v0,  1            # print integer
+    move $a0, $s0        # moving $v0 to $a0
+    li $v0, 1            # print integer
     syscall              # call function
     
-    li $v0,  10           # exiting program
+    li $v0, 10           # exiting program
     syscall              # calling program
 
 displayErrorMsg:   
-    li $v0,  4            # print the string
+    li $v0, 4            # print the string
     la $a0, errorMsg     # from the address linked with errorMsg
     syscall              # call function
     
-    li $v0,  10           # exit code
+    li $v0, 10           # exit code
     syscall              # call function
    
 factorial:
