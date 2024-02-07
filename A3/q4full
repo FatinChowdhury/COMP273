@@ -1,0 +1,81 @@
+.data
+msg1: .asciiz "Please input an integer value greater than or equal to  0: "
+errorMsg: .asciiz "The value you entered is less than zero. This program only works with values greater than or equal to zero."
+inputMsg: .asciiz "Your input: "
+factorialRes: .asciiz "\nThe factorial is: "
+
+.text
+.globl main
+
+main:
+    li $v0,  4            # print the string
+    la $a0, msg1         # from the address linked to msg1 (So print msg1)
+    syscall              # call function
+    
+    li $v0,  5            # read the integer
+    syscall              # call function
+    
+    move $a0, $v0        # move the result in $v0 to $a0
+    bltz $a0, displayErrorMsg # if $a0 is less than  0 then go to displayErrorMsg
+    
+    jal factorial        # jump & connect to the factorial function
+    
+    li $v0,  4            # print string
+    la $a0, inputMsg     # the inputMsg
+    syscall              # call function
+    
+    move $a0, $v0        # moving $v0 to $a0
+    li $v0,  1            # prints the integer
+    syscall              # calling function
+       
+    li $v0,  4            # print the string
+    la $a0, factorialRes # specifically "The factorial is: " sentence    
+    syscall              # calling function
+    
+    move $a0, $v0        # moving $v0 to $a0
+    li $v0,  1            # print integer
+    syscall              # call function
+    
+    li $v0,  10           # exiting program
+    syscall              # calling program
+
+displayErrorMsg:   
+    li $v0,  4            # print the string
+    la $a0, errorMsg     # from the address linked with errorMsg
+    syscall              # call function
+    
+    li $v0,  10           # exit code
+    syscall              # call function
+   
+factorial:
+    # Allocate space on stack for local storage and to save $ra
+    addi $sp, $sp, -8
+    sw $ra,  4($sp)  # Save return address
+    
+    # Check if base case: n <=  0
+    blez $a0, baseCase  # if n <=  0, factorial is  1
+    
+    # Prepare for recursive call: factorial(n-1)
+    addi $a0, $a0, -1  # Decrement n
+    sw $a0,  0($sp)     # Store decremented n for recursive call
+    jal factorial      # Recursive call
+    
+    # After returning from recursive call, retrieve n and the result
+    lw $a0,  0($sp)     # Load n for multiplication
+    addi $a0, $a0,  1   # Correct the decrement to get original n
+    
+    # Multiply n * factorial(n-1)
+    # Note: $v0 already contains factorial(n-1) from the recursive call
+    mul $v0, $a0, $v0
+    
+    # Restore $ra and deallocate stack space
+    lw $ra,  4($sp)
+    addi $sp, $sp,  8
+    jr $ra              # Return to caller
+    
+baseCase:
+    li $v0,  1          # Set factorial(0) =  1
+    # Restore $ra and deallocate stack space for base case
+    lw $ra,  4($sp)
+    addi $sp, $sp,  8
+    jr $ra              # Return to caller
