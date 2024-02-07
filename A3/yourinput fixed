@@ -1,0 +1,47 @@
+.text
+.globl main
+main:
+    li $v0, 4            # print the string
+    la $a0, msg1         # from the address linked to msg1 (So print msg1)
+    syscall              # call function
+    
+    li $v0, 5            # read the integer
+    syscall              # call function
+    
+    move $s0, $v0        # move the inputted integer in $v0 to $s0 for later
+    bltz $s0, displayErrorMsg # if $a1 < 0 then go to displayErrorMsg
+    
+
+    jal factorial        # recursive call
+
+
+    move $s1, $v1        # move the result of factorial result to $s1
+
+
+    li $v0, 4            # print string, specifically...
+    la $a0, inputMsg     # the inputMsg ("Your input is: ")
+    syscall              # call function
+    
+    move $a0, $s0        # moving $s0 to $a0
+    li $v0, 1            # prints the integer that we inputted
+    syscall              # calling function
+       
+    li $v0, 4            # print the string
+    la $a0, factorialRes # specifically "The factorial is: " sentence    
+    syscall              # calling function
+    
+    move $a0, $s1        # moving $v0 to $a0
+    li $v1, 1            # print the result of factorial
+    syscall              # call function
+    
+    
+    li $v0, 4		# asking for retry
+    la $a0, restartMsg	# print "Would you like to... "
+    syscall
+    
+    li $v0, 12		# read a single char
+    syscall
+    
+    li $t1, 'Y'
+    bne $v0, $t1, exit	# if not 'Y', exit
+    j main		# if 'Y' start over
